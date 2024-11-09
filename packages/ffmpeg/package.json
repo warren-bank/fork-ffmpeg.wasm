@@ -1,6 +1,6 @@
 {
-  "name": "@ffmpeg/ffmpeg",
-  "version": "0.12.10",
+  "name": "@warren-bank/ffmpeg",
+  "version": "0.12.10-wasmbinary.1",
   "description": "FFmpeg WebAssembly version for browser",
   "main": "./dist/umd/ffmpeg.js",
   "types": "./dist/esm/index.d.ts",
@@ -20,16 +20,14 @@
     "clean": "rimraf dist",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:umd": "webpack",
-    "build": "npm run clean && npm run build:esm && npm run build:umd",
-    "prepublishOnly": "npm run build"
+    "build": "npm run clean && npm run build:esm && npm run build:umd"
   },
   "files": [
-    "dist",
-    "types/ffmpeg.d.ts"
+    "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ffmpegwasm/ffmpeg.wasm.git"
+    "url": "git+https://github.com/warren-bank/fork-ffmpeg.wasm.git"
   },
   "keywords": [
     "ffmpeg",
@@ -41,12 +39,12 @@
   "author": "Jerome Wu <jeromewus@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ffmpegwasm/ffmpeg.wasm/issues"
+    "url": "https://github.com/warren-bank/fork-ffmpeg.wasm/issues"
   },
   "engines": {
     "node": ">=18.x"
   },
-  "homepage": "https://github.com/ffmpegwasm/ffmpeg.wasm#readme",
+  "homepage": "https://github.com/warren-bank/fork-ffmpeg.wasm/tree/feat/load-wasm-binary-and-transfer-to-worker/",
   "publishConfig": {
     "access": "public"
   },
