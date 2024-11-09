@@ -197,15 +197,21 @@ export class FFmpeg {
         delete config.wasmBinary;
     }
     if (!this.#worker) {
-      this.#worker = classWorkerURL ?
-        new Worker(new URL(classWorkerURL, import.meta.url), {
-          type: "module",
-        }) :
-        // We need to duplicated the code here to enable webpack
-        // to bundle worekr.js here.
-        new Worker(new URL("./worker.js", import.meta.url), {
-          type: "module",
-        });
+      if (classWorkerURL) {
+        const prefix = classWorkerURL.substring(0, 4).toLowerCase();
+
+        if (['http', 'data'].includes(prefix)) {
+          const esm_regex = new RegExp('/esm/[^/]+$');
+          const type = ((prefix === 'http') && esm_regex.test(classWorkerURL)) ? 'module' : 'classic';
+
+          this.#worker = new Worker(new URL(classWorkerURL), { type });
+        }
+      }
+
+      if (!this.#worker) {
+        this.#worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
+      }
+
       this.#registerHandlers();
     }
     return this.#send(
