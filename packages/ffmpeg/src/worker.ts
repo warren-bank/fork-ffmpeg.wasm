@@ -2,7 +2,6 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import type { FFmpegCoreModule, FFmpegCoreModuleFactory } from "@ffmpeg/types";
 import type {
   FFMessageEvent,
   FFMessageLoadConfig,
@@ -16,6 +15,8 @@ import type {
   FFMessageDeleteDirData,
   FFMessageMountData,
   FFMessageUnmountData,
+  FFmpegCoreModule,
+  FFmpegCoreModuleFactory,
   CallbackData,
   IsFirst,
   OK,

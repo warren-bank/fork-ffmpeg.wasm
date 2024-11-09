@@ -1,3 +1,5 @@
+import type { FFmpegCoreModule as _FFmpegCoreModule } from "@ffmpeg/types";
+
 export type FFFSPath = string;
 
 /**
@@ -183,3 +185,11 @@ export interface FFMessageEventCallback {
     data: CallbackData;
   };
 }
+
+export interface FFmpegCoreModule extends _FFmpegCoreModule {
+  wasmBinary?: WasmBinaryData;
+}
+
+export type FFmpegCoreModuleFactory = (
+  moduleOverrides?: Partial<FFmpegCoreModule>
+) => Promise<FFmpegCoreModule>;
