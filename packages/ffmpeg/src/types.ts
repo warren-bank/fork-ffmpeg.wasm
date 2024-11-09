@@ -30,6 +30,8 @@ export interface FFMessageLoadConfig {
    * @defaultValue `./worker.js`
    */
   classWorkerURL?: string;
+
+  wasmBinary?: WasmBinaryData;
 }
 
 export interface FFMessageExecData {
@@ -146,6 +148,7 @@ export interface ProgressEvent {
 export type ExitCode = number;
 export type ErrorMessage = string;
 export type FileData = Uint8Array | string;
+export type WasmBinaryData = ArrayBuffer | Uint8Array;
 export type IsFirst = boolean;
 export type OK = boolean;
 

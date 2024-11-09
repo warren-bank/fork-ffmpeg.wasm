@@ -187,6 +187,15 @@ export class FFmpeg {
     { classWorkerURL, ...config }: FFMessageLoadConfig = {},
     { signal }: FFMessageOptions = {}
   ): Promise<IsFirst> => {
+    const trans: Transferable[] = [];
+    if (config && config.wasmBinary) {
+      if (config.wasmBinary instanceof ArrayBuffer)
+        trans.push(config.wasmBinary);
+      else if (config.wasmBinary instanceof Uint8Array)
+        trans.push(config.wasmBinary.buffer);
+      else
+        delete config.wasmBinary;
+    }
     if (!this.#worker) {
       this.#worker = classWorkerURL ?
         new Worker(new URL(classWorkerURL, import.meta.url), {
@@ -204,7 +213,7 @@ export class FFmpeg {
         type: FFMessageType.LOAD,
         data: config,
       },
-      undefined,
+      trans,
       signal
     ) as Promise<IsFirst>;
   };

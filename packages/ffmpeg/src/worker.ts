@@ -44,6 +44,7 @@ let ffmpeg: FFmpegCoreModule;
 
 const load = async ({
   coreURL: _coreURL,
+  wasmBinary: _wasmBinary,
   wasmURL: _wasmURL,
   workerURL: _workerURL,
 }: FFMessageLoadConfig): Promise<IsFirst> => {
@@ -68,7 +69,8 @@ const load = async ({
   }
 
   const coreURL = _coreURL;
-  const wasmURL = _wasmURL ? _wasmURL : _coreURL.replace(/.js$/g, ".wasm");
+  const wasmBinary = _wasmBinary;
+  const wasmURL = _wasmBinary ? "data:application/octet-stream;base64," : _wasmURL ? _wasmURL : _coreURL.replace(/.js$/g, ".wasm");
   const workerURL = _workerURL
     ? _workerURL
     : _coreURL.replace(/.js$/g, ".worker.js");
@@ -79,6 +81,7 @@ const load = async ({
     mainScriptUrlOrBlob: `${coreURL}#${btoa(
       JSON.stringify({ wasmURL, workerURL })
     )}`,
+    wasmBinary,
   });
   ffmpeg.setLogger((data) =>
     self.postMessage({ type: FFMessageType.LOG, data })
