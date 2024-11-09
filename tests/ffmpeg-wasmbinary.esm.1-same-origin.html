@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script type="module">
+      /*
+       * -----------------------------------------------------------------------
+       * https://www.jsdelivr.com/package/npm/@ffmpeg/core
+       * https://cdn.jsdelivr.net/npm/@ffmpeg/core/
+       * https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js
+       * https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm
+       * -----------------------------------------------------------------------
+       * https://www.jsdelivr.com/package/npm/@ffmpeg/util
+       * https://cdn.jsdelivr.net/npm/@ffmpeg/util/
+       * https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js
+       * -----------------------------------------------------------------------
+       * https://www.jsdelivr.com/package/npm/@warren-bank/ffmpeg
+       * https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg/
+       * https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg@0.12.10-wasmbinary.2/dist/esm/index.js
+       * https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg@0.12.10-wasmbinary.2/dist/esm/worker.js
+       *
+       * notes:
+       * ======
+       *   - Cannot load script from CDN with default "classWorkerURL",
+       *     because "worker.js" that is executed by a Worker must be loaded from the same Origin as this test page.
+       *     Specifically, the following will not work:
+       *         import { FFmpeg } from "https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg@0.12.10-wasmbinary.2/dist/esm/index.js";
+       *         const ffmpeg = new FFmpeg();
+       *         ffmpeg.load({ classWorkerURL: '' });
+       *
+       *   - Cannot fetch "worker.js" from CDN and pass its content to "classWorkerURL" in a data: URI.
+       *     Its ESM imports that use relative paths cannot resolve back to the CDN.
+       *     Specifically, the following will not work:
+       *         import { FFmpeg } from "https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg@0.12.10-wasmbinary.2/dist/esm/index.js";
+       *         const classWorkerURL = 'data:text/javascript;base64,' + await fetch("https://cdn.jsdelivr.net/npm/@warren-bank/ffmpeg@0.12.10-wasmbinary.2/dist/esm/worker.js").then(res => res.text()).then(btoa);
+       *         const ffmpeg = new FFmpeg();
+       *         ffmpeg.load({ classWorkerURL });
+       * -----------------------------------------------------------------------
+       */
+
+      import { FFmpeg } from "/packages/ffmpeg/dist/esm/index.js";
+      import { fetchFile } from "https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js";
+
+      let ffmpeg = null;
+      let wasmBinary = null;
+
+      const transcode = async ({ target: { files } }) => {
+        const message = document.getElementById('message');
+        if (ffmpeg === null) {
+          ffmpeg = new FFmpeg();
+          ffmpeg.on("log", ({ message }) => {
+            console.log(message);
+          })
+          ffmpeg.on("progress", ({ progress }) => {
+            message.innerHTML = `${progress * 100} %`;
+          });
+          await ffmpeg.load({
+            coreURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
+            wasmBinary
+          });
+        }
+        const { name } = files[0];
+        await ffmpeg.writeFile(name, await fetchFile(files[0]));
+        message.innerHTML = 'Start transcoding';
+        await ffmpeg.exec(['-i', name,  'output.mp4']);
+        message.innerHTML = 'Complete transcoding';
+        const data = await ffmpeg.readFile('output.mp4');
+
+        const video = document.getElementById('output-video');
+        video.src = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+      }
+
+      const init = async () => {
+        const uploader = document.getElementById('uploader');
+
+        uploader.style.display = 'none';
+        wasmBinary = await fetch("https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm").then(res => res.arrayBuffer());
+        uploader.style.display = 'block';
+        uploader.addEventListener('change', transcode);
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </head>
+  <body>
+    <h3>Quick Test</h3>
+    <video id="output-video" controls></video><br/>
+    <input type="file" id="uploader">
+    <p id="message"></p>
+  </body>
+</html>
