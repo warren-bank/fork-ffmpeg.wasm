@@ -1,6 +1,6 @@
 {
   "name": "@warren-bank/ffmpeg",
-  "version": "0.12.10-wasmbinary.1",
+  "version": "0.12.10-wasmbinary.2",
   "description": "FFmpeg WebAssembly version for browser",
   "main": "./dist/umd/ffmpeg.js",
   "types": "./dist/esm/index.d.ts",
