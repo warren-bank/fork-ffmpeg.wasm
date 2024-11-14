@@ -34,6 +34,8 @@ export interface FFMessageLoadConfig {
   classWorkerURL?: string;
 
   wasmBinary?: WasmBinaryData;
+
+  createTrustedTypePolicy?: boolean;
 }
 
 export interface FFMessageExecData {

@@ -25,6 +25,7 @@ import type {
   FileData,
 } from "./types";
 import { CORE_URL, FFMessageType } from "./const.js";
+import { createTrustedTypePolicy } from "./trusted-type-policy.js";
 import {
   ERROR_UNKNOWN_MESSAGE_TYPE,
   ERROR_NOT_LOADED,
@@ -48,8 +49,13 @@ const load = async ({
   wasmBinary: _wasmBinary,
   wasmURL: _wasmURL,
   workerURL: _workerURL,
+  createTrustedTypePolicy: _createTrustedTypePolicy,
 }: FFMessageLoadConfig): Promise<IsFirst> => {
   const first = !ffmpeg;
+
+  if (first) {
+    createTrustedTypePolicy(_createTrustedTypePolicy);
+  }
 
   try {
     if (!_coreURL) _coreURL = CORE_URL;

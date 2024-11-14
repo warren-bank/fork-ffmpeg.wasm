@@ -189,12 +189,14 @@ export class FFmpeg {
   ): Promise<IsFirst> => {
     const trans: Transferable[] = [];
     if (config && config.wasmBinary) {
-      if (config.wasmBinary instanceof ArrayBuffer)
+      if (config.wasmBinary instanceof ArrayBuffer) {
         trans.push(config.wasmBinary);
-      else if (config.wasmBinary instanceof Uint8Array)
-        trans.push(config.wasmBinary.buffer);
-      else
+      } else if (config.wasmBinary instanceof Uint8Array) {
+        config.wasmBinary = config.wasmBinary.buffer;
+        trans.push(config.wasmBinary);
+      } else {
         delete config.wasmBinary;
+      }
     }
     if (!this.#worker) {
       if (classWorkerURL) {
